@@ -144,6 +144,8 @@ one should use the wrapper functions provided for `PangoAttribute`.</doc>
         <type name="AttrType" c:type="PangoAttrType"/>
       </field>
       <field name="copy">
+        <doc xml:space="preserve">function to duplicate an attribute of this type
+  (see [method@Pango.Attribute.copy])</doc>
         <callback name="copy">
           <return-value transfer-ownership="full">
             <type name="Attribute" c:type="PangoAttribute*"/>
@@ -156,6 +158,8 @@ one should use the wrapper functions provided for `PangoAttribute`.</doc>
         </callback>
       </field>
       <field name="destroy">
+        <doc xml:space="preserve">function to free an attribute of this type
+  (see [method@Pango.Attribute.destroy])</doc>
         <callback name="destroy">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -168,6 +172,8 @@ one should use the wrapper functions provided for `PangoAttribute`.</doc>
         </callback>
       </field>
       <field name="equal">
+        <doc xml:space="preserve">function to check two attributes of this type for equality
+  (see [method@Pango.Attribute.equal])</doc>
         <callback name="equal">
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
@@ -4293,7 +4299,7 @@ for enumerating faces.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_name" c:identifier="pango_font_family_get_name">
+      <method name="get_name" c:identifier="pango_font_family_get_name" glib:get-property="name">
         <doc xml:space="preserve">Gets the name of the family.
 
 The name is unique among all fonts for the font backend and can
@@ -4311,7 +4317,7 @@ this family is desired.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="is_monospace" c:identifier="pango_font_family_is_monospace" version="1.4">
+      <method name="is_monospace" c:identifier="pango_font_family_is_monospace" glib:get-property="is-monospace" version="1.4">
         <doc xml:space="preserve">A monospace font is a font designed for text display where the the
 characters form a regular grid.
 
@@ -4337,7 +4343,7 @@ be affected by double-width characters.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="is_variable" c:identifier="pango_font_family_is_variable" version="1.44">
+      <method name="is_variable" c:identifier="pango_font_family_is_variable" glib:get-property="is-variable" version="1.44">
         <doc xml:space="preserve">A variable font is a font which has axes that can be modified to
 produce different faces.
 
@@ -4388,6 +4394,16 @@ for enumerating faces.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="is-monospace" version="1.52" transfer-ownership="none" getter="is_monospace" default-value="FALSE">
+        <attribute name="org.gtk.Property.get" value="pango_font_family_is_monospace"/>
+        <doc xml:space="preserve">Is this a monospace font</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="is-variable" version="1.52" transfer-ownership="none" getter="is_variable" default-value="FALSE">
+        <attribute name="org.gtk.Property.get" value="pango_font_family_is_variable"/>
+        <doc xml:space="preserve">Is this a variable font</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="item-type" transfer-ownership="none">
         <doc xml:space="preserve">The type of items contained in this list.</doc>
         <type name="GType" c:type="GType"/>
@@ -4395,6 +4411,11 @@ for enumerating faces.</doc>
       <property name="n-items" transfer-ownership="none" default-value="0">
         <doc xml:space="preserve">The number of items contained in this list.</doc>
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="name" version="1.52" transfer-ownership="none" getter="get_name" default-value="NULL">
+        <attribute name="org.gtk.Property.get" value="pango_font_family_get_name"/>
+        <doc xml:space="preserve">The name of the family</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
@@ -4818,6 +4839,38 @@ a font matching @desc.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="reload_font" c:identifier="pango_font_map_reload_font" version="1.52">
+        <doc xml:space="preserve">Returns a new font that is like @font, except that its size
+is multiplied by @scale, its backend-dependent configuration
+(e.g. cairo font options) is replaced by the one in @context,
+and its variations are replaced by @variations.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the modified font</doc>
+          <type name="Font" c:type="PangoFont*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="fontmap" transfer-ownership="none">
+            <doc xml:space="preserve">a `PangoFontMap`</doc>
+            <type name="FontMap" c:type="PangoFontMap*"/>
+          </instance-parameter>
+          <parameter name="font" transfer-ownership="none">
+            <doc xml:space="preserve">a font in @fontmap</doc>
+            <type name="Font" c:type="PangoFont*"/>
+          </parameter>
+          <parameter name="scale" transfer-ownership="none">
+            <doc xml:space="preserve">the scale factor to apply</doc>
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="context" transfer-ownership="none" nullable="1" allow-none="1">
+            <doc xml:space="preserve">a `PangoContext`</doc>
+            <type name="Context" c:type="PangoContext*"/>
+          </parameter>
+          <parameter name="variations" transfer-ownership="none" nullable="1" allow-none="1">
+            <doc xml:space="preserve">font variations to use</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="item-type" transfer-ownership="none">
         <doc xml:space="preserve">The type of items contained in this list.</doc>
         <type name="GType" c:type="GType"/>
@@ -4838,6 +4891,8 @@ a particular `PangoFontMap` implementation.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="load_font">
+        <doc xml:space="preserve">a function to load a font with a given description. See
+pango_font_map_load_font().</doc>
         <callback name="load_font">
           <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">the newly allocated `PangoFont`
@@ -4861,6 +4916,8 @@ a particular `PangoFontMap` implementation.</doc>
         </callback>
       </field>
       <field name="list_families">
+        <doc xml:space="preserve">A function to list available font families. See
+pango_font_map_list_families().</doc>
         <callback name="list_families">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -4886,6 +4943,8 @@ a particular `PangoFontMap` implementation.</doc>
         </callback>
       </field>
       <field name="load_fontset">
+        <doc xml:space="preserve">a function to load a fontset with a given given description
+suitable for a particular language. See pango_font_map_load_fontset().</doc>
         <callback name="load_fontset">
           <return-value transfer-ownership="full" nullable="1">
             <doc xml:space="preserve">the newly allocated
@@ -4918,6 +4977,8 @@ can handle fonts of this fonts loaded with this fontmap.</doc>
         <type name="utf8" c:type="const char*"/>
       </field>
       <field name="get_serial">
+        <doc xml:space="preserve">a function to get the serial number of the fontmap.
+See pango_font_map_get_serial().</doc>
         <callback name="get_serial">
           <return-value transfer-ownership="none">
             <doc xml:space="preserve">The current serial number of @fontmap.</doc>
@@ -4932,6 +4993,7 @@ can handle fonts of this fonts loaded with this fontmap.</doc>
         </callback>
       </field>
       <field name="changed">
+        <doc xml:space="preserve">See pango_font_map_changed()</doc>
         <callback name="changed">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -5293,6 +5355,7 @@ glyph for a Unicode character.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="get_language">
+        <doc xml:space="preserve">a function to get the language of the fontset.</doc>
         <return-value transfer-ownership="full">
           <type name="Language" c:type="PangoLanguage*"/>
         </return-value>
@@ -5381,6 +5444,8 @@ a particular `PangoFontset` implementation.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="get_font">
+        <doc xml:space="preserve">a function to get the font in the fontset that contains the
+  best glyph for the given Unicode character; see [method@Pango.Fontset.get_font]</doc>
         <callback name="get_font">
           <return-value transfer-ownership="full">
             <doc xml:space="preserve">a `PangoFont`</doc>
@@ -5399,6 +5464,8 @@ a particular `PangoFontset` implementation.</doc>
         </callback>
       </field>
       <field name="get_metrics">
+        <doc xml:space="preserve">a function to get overall metric information for the fonts
+  in the fontset; see [method@Pango.Fontset.get_metrics]</doc>
         <callback name="get_metrics">
           <return-value transfer-ownership="full">
             <doc xml:space="preserve">a `PangoFontMetrics` object</doc>
@@ -5413,6 +5480,7 @@ a particular `PangoFontset` implementation.</doc>
         </callback>
       </field>
       <field name="get_language">
+        <doc xml:space="preserve">a function to get the language of the fontset.</doc>
         <callback name="get_language">
           <return-value transfer-ownership="full">
             <type name="Language" c:type="PangoLanguage*"/>
@@ -5425,6 +5493,8 @@ a particular `PangoFontset` implementation.</doc>
         </callback>
       </field>
       <field name="foreach">
+        <doc xml:space="preserve">a function to loop over the fonts in the fontset. See
+  [method@Pango.Fontset.foreach]</doc>
         <callback name="foreach">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -9839,6 +9909,7 @@ By subclassing `PangoRenderer` and overriding operations such as
 @draw_glyphs and @draw_rectangle, renderers for particular font
 backends and destinations can be created.</doc>
       <virtual-method name="begin">
+        <doc xml:space="preserve">Do renderer-specific initialization before drawing</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10028,6 +10099,9 @@ Use [method@Pango.Renderer.activate] to activate a renderer.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="draw_shape">
+        <doc xml:space="preserve">draw content for a glyph shaped with `PangoAttrShape`
+  @x, @y are the coordinates of the left edge of the baseline,
+  in user coordinates.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10088,6 +10162,7 @@ using the given `PangoRenderer`; coordinates are in device space.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="end">
+        <doc xml:space="preserve">Do renderer-specific cleanup after drawing</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10128,6 +10203,7 @@ changes to colors. (See [method@Pango.Renderer.set_color])</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="prepare_run">
+        <doc xml:space="preserve">updates the renderer for a new run</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -10684,6 +10760,7 @@ and must be implemented:
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="draw_glyphs">
+        <doc xml:space="preserve">draws a `PangoGlyphString`</doc>
         <callback name="draw_glyphs">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10715,6 +10792,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="draw_rectangle">
+        <doc xml:space="preserve">draws a rectangle</doc>
         <callback name="draw_rectangle">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10750,6 +10828,9 @@ and must be implemented:
         </callback>
       </field>
       <field name="draw_error_underline">
+        <doc xml:space="preserve">draws a squiggly line that approximately
+covers the given rectangle in the style of an underline used to
+indicate a spelling error.</doc>
         <callback name="draw_error_underline">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10779,6 +10860,9 @@ and must be implemented:
         </callback>
       </field>
       <field name="draw_shape">
+        <doc xml:space="preserve">draw content for a glyph shaped with `PangoAttrShape`
+  @x, @y are the coordinates of the left edge of the baseline,
+  in user coordinates.</doc>
         <callback name="draw_shape">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10800,6 +10884,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="draw_trapezoid">
+        <doc xml:space="preserve">draws a trapezoidal filled area</doc>
         <callback name="draw_trapezoid">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10841,6 +10926,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="draw_glyph">
+        <doc xml:space="preserve">draws a single glyph</doc>
         <callback name="draw_glyph">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10870,6 +10956,8 @@ and must be implemented:
         </callback>
       </field>
       <field name="part_changed">
+        <doc xml:space="preserve">do renderer specific processing when rendering
+ attributes change</doc>
         <callback name="part_changed">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10887,6 +10975,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="begin">
+        <doc xml:space="preserve">Do renderer-specific initialization before drawing</doc>
         <callback name="begin">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10899,6 +10988,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="end">
+        <doc xml:space="preserve">Do renderer-specific cleanup after drawing</doc>
         <callback name="end">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10911,6 +11001,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="prepare_run">
+        <doc xml:space="preserve">updates the renderer for a new run</doc>
         <callback name="prepare_run">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -10926,6 +11017,7 @@ and must be implemented:
         </callback>
       </field>
       <field name="draw_glyph_item">
+        <doc xml:space="preserve">draws a `PangoGlyphItem`</doc>
         <callback name="draw_glyph_item">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
@@ -12053,15 +12145,15 @@ Two encoded version numbers can be compared as integers.</doc>
       <doc xml:space="preserve">The major component of the version of Pango available at compile-time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MICRO" value="0" c:type="PANGO_VERSION_MICRO">
+    <constant name="VERSION_MICRO" value="2" c:type="PANGO_VERSION_MICRO">
       <doc xml:space="preserve">The micro component of the version of Pango available at compile-time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MINOR" value="51" c:type="PANGO_VERSION_MINOR">
+    <constant name="VERSION_MINOR" value="52" c:type="PANGO_VERSION_MINOR">
       <doc xml:space="preserve">The minor component of the version of Pango available at compile-time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_STRING" value="1.51.0" c:type="PANGO_VERSION_STRING">
+    <constant name="VERSION_STRING" value="1.52.2" c:type="PANGO_VERSION_STRING">
       <doc xml:space="preserve">A string literal containing the version of Pango available at compile-time.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
