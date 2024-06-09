@@ -487,9 +487,6 @@ even on a local clipboard. In this case the clipboard is empty.</doc>
         <doc xml:space="preserve">Asynchronously requests an input stream to read the @clipboard's
 contents from.
 
-When the operation is finished @callback will be called. You must then
-call [method@Gdk.Clipboard.read_finish] to get the result of the operation.
-
 The clipboard will choose the most suitable mime type from the given list
 to fulfill the request, preferring the ones listed first.</doc>
         <return-value transfer-ownership="none">
@@ -551,9 +548,6 @@ See [method@Gdk.Clipboard.read_async].</doc>
       <method name="read_text_async" c:identifier="gdk_clipboard_read_text_async" glib:finish-func="read_text_finish">
         <doc xml:space="preserve">Asynchronously request the @clipboard contents converted to a string.
 
-When the operation is finished @callback will be called. You must then
-call [method@Gdk.Clipboard.read_text_finish] to get the result.
-
 This is a simple wrapper around [method@Gdk.Clipboard.read_value_async].
 Use that function or [method@Gdk.Clipboard.read_async] directly if you
 need more control over the operation.</doc>
@@ -600,9 +594,6 @@ See [method@Gdk.Clipboard.read_text_async].</doc>
       </method>
       <method name="read_texture_async" c:identifier="gdk_clipboard_read_texture_async" glib:finish-func="read_texture_finish">
         <doc xml:space="preserve">Asynchronously request the @clipboard contents converted to a `GdkPixbuf`.
-
-When the operation is finished @callback will be called. You must then
-call [method@Gdk.Clipboard.read_texture_finish] to get the result.
 
 This is a simple wrapper around [method@Gdk.Clipboard.read_value_async].
 Use that function or [method@Gdk.Clipboard.read_async] directly if you
@@ -651,9 +642,6 @@ See [method@Gdk.Clipboard.read_texture_async].</doc>
       <method name="read_value_async" c:identifier="gdk_clipboard_read_value_async" glib:finish-func="read_value_finish">
         <doc xml:space="preserve">Asynchronously request the @clipboard contents converted to the given
 @type.
-
-When the operation is finished @callback will be called. You must then call
-[method@Gdk.Clipboard.read_value_finish] to get the resulting `GValue`.
 
 For local clipboard contents that are available in the given `GType`,
 the value will be copied directly. Otherwise, GDK will try to use
@@ -838,8 +826,6 @@ transfer the contents and then request that format from @provider.</doc>
         <doc xml:space="preserve">Asynchronously instructs the @clipboard to store its contents remotely.
 
 If the clipboard is not local, this function does nothing but report success.
-
-The @callback must call [method@Gdk.Clipboard.store_finish].
 
 The purpose of this call is to preserve clipboard contents beyond the
 lifetime of an application, so this function is typically called on
@@ -1805,10 +1791,6 @@ This can be assumed to be a subset of [method@Gdk.ContentProvider.ref_formats].<
         <doc xml:space="preserve">Asynchronously writes the contents of @provider to @stream in the given
 @mime_type.
 
-When the operation is finished @callback will be called. You must then call
-[method@Gdk.ContentProvider.write_mime_type_finish] to get the result
-of the operation.
-
 The given mime type does not need to be listed in the formats returned by
 [method@Gdk.ContentProvider.ref_formats]. However, if the given `GType` is
 not supported, `G_IO_ERROR_NOT_SUPPORTED` will be reported.
@@ -1940,10 +1922,6 @@ This can be assumed to be a subset of [method@Gdk.ContentProvider.ref_formats].<
       <method name="write_mime_type_async" c:identifier="gdk_content_provider_write_mime_type_async" glib:finish-func="write_mime_type_finish">
         <doc xml:space="preserve">Asynchronously writes the contents of @provider to @stream in the given
 @mime_type.
-
-When the operation is finished @callback will be called. You must then call
-[method@Gdk.ContentProvider.write_mime_type_finish] to get the result
-of the operation.
 
 The given mime type does not need to be listed in the formats returned by
 [method@Gdk.ContentProvider.ref_formats]. However, if the given `GType` is
@@ -2487,6 +2465,35 @@ above, it will try the fallback cursor. Fallback cursors can themselves have
 fallback cursors again, so it is possible to provide a chain of progressively
 easier to support cursors. If none of the provided cursors can be supported,
 the default cursor will be the ultimate fallback.</doc>
+      <constructor name="new_from_callback" c:identifier="gdk_cursor_new_from_callback" version="4.16">
+        <doc xml:space="preserve">Creates a new callback-based cursor object.
+
+Cursors of this kind produce textures for the cursor
+image on demand, when the @callback is called.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new `GdkCursor`</doc>
+          <type name="Cursor" c:type="GdkCursor*"/>
+        </return-value>
+        <parameters>
+          <parameter name="callback" transfer-ownership="none" scope="notified" closure="1" destroy="2">
+            <doc xml:space="preserve">the `GdkCursorGetTextureCallback`</doc>
+            <type name="CursorGetTextureCallback" c:type="GdkCursorGetTextureCallback"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none" nullable="1" allow-none="1">
+            <doc xml:space="preserve">data to pass to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">destroy notify for @data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="fallback" transfer-ownership="none" nullable="1" allow-none="1">
+            <doc xml:space="preserve">the `GdkCursor` to fall back to when
+  this one cannot be supported</doc>
+            <type name="Cursor" c:type="GdkCursor*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_from_name" c:identifier="gdk_cursor_new_from_name">
         <doc xml:space="preserve">Creates a new cursor by looking up @name in the current cursor
 theme.
@@ -2671,6 +2678,63 @@ The texture will be %NULL if the cursor was created from a name.</doc>
         <type name="Texture"/>
       </property>
     </class>
+    <callback name="CursorGetTextureCallback" c:type="GdkCursorGetTextureCallback">
+      <doc xml:space="preserve">The type of callback used by a dynamic `GdkCursor` to generate
+a texture for the cursor image at the given @cursor_size
+and @scale.
+
+The actual cursor size in application pixels may be different
+from @cursor_size x @cursor_size, and will be returned in
+@width, @height. The returned texture should have a size that
+corresponds to the actual cursor size, in device pixels (i.e.
+application pixels, multiplied by @scale).
+
+This function may fail and return `NULL`, in which case
+the fallback cursor will be used.</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">the cursor image, or
+  `NULL` if none could be produced.</doc>
+        <type name="Texture" c:type="GdkTexture*"/>
+      </return-value>
+      <parameters>
+        <parameter name="cursor" transfer-ownership="none">
+          <doc xml:space="preserve">the `GdkCursor`</doc>
+          <type name="Cursor" c:type="GdkCursor*"/>
+        </parameter>
+        <parameter name="cursor_size" transfer-ownership="none">
+          <doc xml:space="preserve">the nominal cursor size, in application pixels</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="scale" transfer-ownership="none">
+          <doc xml:space="preserve">the device scale</doc>
+          <type name="gdouble" c:type="double"/>
+        </parameter>
+        <parameter name="width" direction="out" caller-allocates="0" transfer-ownership="full">
+          <doc xml:space="preserve">return location for the actual cursor width,
+  in application pixels</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+        <parameter name="height" direction="out" caller-allocates="0" transfer-ownership="full">
+          <doc xml:space="preserve">return location for the actual cursor height,
+  in application pixels</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+        <parameter name="hotspot_x" direction="out" caller-allocates="0" transfer-ownership="full">
+          <doc xml:space="preserve">return location for the hotspot X position,
+  in application pixels</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+        <parameter name="hotspot_y" direction="out" caller-allocates="0" transfer-ownership="full">
+          <doc xml:space="preserve">return location for the hotspot Y position,
+  in application pixels</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+        <parameter name="data" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve">User data for the callback</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <function-macro name="DECLARE_INTERNAL_TYPE" c:identifier="GDK_DECLARE_INTERNAL_TYPE" introspectable="0">
       <parameters>
         <parameter name="ModuleObjName">
@@ -4300,7 +4364,9 @@ backends will be used.</doc>
   reasons</doc>
       </member>
       <function name="quark" c:identifier="gdk_dmabuf_error_quark">
+        <doc xml:space="preserve">Registers an error quark for [class@Gdk.DmabufTexture] errors.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the error quark</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
@@ -4517,22 +4583,20 @@ For further information, see
       <method name="build" c:identifier="gdk_dmabuf_texture_builder_build" version="4.14" throws="1">
         <doc xml:space="preserve">Builds a new `GdkTexture` with the values set up in the builder.
 
-It is a programming error to call this function if any mandatory
-property has not been set.
+It is a programming error to call this function if any mandatory property has not been set.
 
-If the dmabuf is not supported by GTK, %NULL will be returned and @error will be set.
+Not all formats defined in the `drm_fourcc.h` header are supported. You can use
+[method@Gdk.Display.get_dmabuf_formats] to get a list of supported formats. If the
+format is not supported by GTK, %NULL will be returned and @error will be set.
 
 The `destroy` function gets called when the returned texture gets released.
-
-It is possible to call this function multiple times to create multiple textures,
-possibly with changing properties in between.
 
 It is the responsibility of the caller to keep the file descriptors for the planes
 open until the created texture is no longer used, and close them afterwards (possibly
 using the @destroy notify).
 
-Not all formats defined in the `drm_fourcc.h` header are supported. You can use
-[method@Gdk.Display.get_dmabuf_formats] to get a list of supported formats.</doc>
+It is possible to call this function multiple times to create multiple textures,
+possibly with changing properties in between.</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a newly built `GdkTexture` or `NULL`
   if the format is not supported</doc>
@@ -5416,7 +5480,7 @@ a result.</doc>
     <record name="DragSurfaceInterface" c:type="GdkDragSurfaceInterface" disguised="1" opaque="1" glib:is-gtype-struct-for="DragSurface">
       <doc xml:space="preserve">The `GdkDragSurfaceInterface` implementation is private to GDK.</doc>
     </record>
-    <record name="DragSurfaceSize" c:type="GdkDragSurfaceSize" disguised="1" opaque="1" version="4.12">
+    <record name="DragSurfaceSize" c:type="GdkDragSurfaceSize" disguised="1" opaque="1" version="4.12" glib:type-name="GdkDragSurfaceSize" glib:get-type="gdk_drag_surface_size_get_type" c:symbol-prefix="drag_surface_size">
       <doc xml:space="preserve">The `GdkDragSurfaceSize` struct contains information that is useful
 to compute the size of a drag surface.</doc>
       <method name="set_size" c:identifier="gdk_drag_surface_size_set_size" version="4.12">
@@ -5789,10 +5853,6 @@ See [method@Gdk.Drop.read_async].</doc>
       <method name="read_value_async" c:identifier="gdk_drop_read_value_async" glib:finish-func="read_value_finish">
         <doc xml:space="preserve">Asynchronously request the drag operation's contents converted
 to the given @type.
-
-When the operation is finished @callback will be called. You must
-then call [method@Gdk.Drop.read_value_finish] to get the resulting
-`GValue`.
 
 For local drag-and-drop operations that are available in the given
 `GType`, the value will be copied directly. Otherwise, GDK will
@@ -6203,6 +6263,7 @@ Emulated pointer events typically originate from a touch events.</doc>
 
 This position is in [surface coordinates](coordinates.html).</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the positions were set</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -7501,7 +7562,9 @@ anymore, this function has been deprecated and now always returns %NULL.</doc>
         <doc xml:space="preserve">The shader linking failed</doc>
       </member>
       <function name="quark" c:identifier="gdk_gl_error_quark">
+        <doc xml:space="preserve">Registers an error quark for [class@Gdk.GLContext] errors.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the error quark</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
@@ -16479,7 +16542,7 @@ that will make the implementation likely quite slow.</doc>
         </callback>
       </field>
       <field name="get_flags">
-        <doc xml:space="preserve">Get the flags for this instance. See [enum@Gdk.PaintableFlags]
+        <doc xml:space="preserve">Get the flags for this instance. See [flags@Gdk.PaintableFlags]
   for details.</doc>
         <callback name="get_flags">
           <return-value transfer-ownership="none">
@@ -18928,7 +18991,9 @@ By default, GDK_MEMORY_DEFAULT is set.</doc>
         <doc xml:space="preserve">The image format is not supported</doc>
       </member>
       <function name="quark" c:identifier="gdk_texture_error_quark">
+        <doc xml:space="preserve">Registers an error quark for [class@Gdk.Texture] errors.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the error quark</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
@@ -18956,11 +19021,16 @@ the [enum@Gdk.AxisUse] enumerations as indices.</doc>
       </field>
     </record>
     <enumeration name="TitlebarGesture" version="4.4" glib:type-name="GdkTitlebarGesture" glib:get-type="gdk_titlebar_gesture_get_type" c:type="GdkTitlebarGesture">
+      <doc xml:space="preserve">The kind of title bar gesture to emit with
+[method@Gdk.Toplevel.titlebar_gesture].</doc>
       <member name="double_click" value="1" c:identifier="GDK_TITLEBAR_GESTURE_DOUBLE_CLICK" glib:nick="double-click" glib:name="GDK_TITLEBAR_GESTURE_DOUBLE_CLICK">
+        <doc xml:space="preserve">double click gesture</doc>
       </member>
       <member name="right_click" value="2" c:identifier="GDK_TITLEBAR_GESTURE_RIGHT_CLICK" glib:nick="right-click" glib:name="GDK_TITLEBAR_GESTURE_RIGHT_CLICK">
+        <doc xml:space="preserve">right click gesture</doc>
       </member>
       <member name="middle_click" value="3" c:identifier="GDK_TITLEBAR_GESTURE_MIDDLE_CLICK" glib:nick="middle-click" glib:name="GDK_TITLEBAR_GESTURE_MIDDLE_CLICK">
+        <doc xml:space="preserve">middle click gesture</doc>
       </member>
     </enumeration>
     <interface name="Toplevel" c:symbol-prefix="toplevel" c:type="GdkToplevel" glib:type-name="GdkToplevel" glib:get-type="gdk_toplevel_get_type" glib:type-struct="ToplevelInterface">
@@ -19676,7 +19746,7 @@ to resize the surface after it has been presented.</doc>
         </parameters>
       </method>
     </record>
-    <record name="ToplevelSize" c:type="GdkToplevelSize" disguised="1" opaque="1">
+    <record name="ToplevelSize" c:type="GdkToplevelSize" disguised="1" opaque="1" glib:type-name="GdkToplevelSize" glib:get-type="gdk_toplevel_size_get_type" c:symbol-prefix="toplevel_size">
       <doc xml:space="preserve">The `GdkToplevelSize` struct contains information that is useful
 to compute the size of a toplevel.</doc>
       <method name="get_bounds" c:identifier="gdk_toplevel_size_get_bounds">
@@ -19990,7 +20060,7 @@ progress of the gesture.</doc>
         </parameter>
       </parameters>
     </function-macro>
-    <class name="VulkanContext" c:symbol-prefix="vulkan_context" c:type="GdkVulkanContext" parent="DrawContext" abstract="1" glib:type-name="GdkVulkanContext" glib:get-type="gdk_vulkan_context_get_type">
+    <class name="VulkanContext" c:symbol-prefix="vulkan_context" c:type="GdkVulkanContext" deprecated="1" deprecated-version="4.14" parent="DrawContext" abstract="1" glib:type-name="GdkVulkanContext" glib:get-type="gdk_vulkan_context_get_type">
       <doc xml:space="preserve">`GdkVulkanContext` is an object representing the platform-specific
 Vulkan draw context.
 
@@ -20000,6 +20070,8 @@ the characteristics of the surface.
 
 Support for `GdkVulkanContext` is platform-specific and context creation
 can fail, returning %NULL context.</doc>
+      <doc-deprecated xml:space="preserve">GTK does not expose any Vulkan internals. This
+  struct is a leftover that was accidentally exposed.</doc-deprecated>
       <implements name="Gio.Initable"/>
       <glib:signal name="images-updated" when="last">
         <doc xml:space="preserve">Emitted when the images managed by this context have changed.
@@ -20021,7 +20093,9 @@ for example in response to a change of the surface size.</doc>
         <doc xml:space="preserve">Vulkan support is not available on this Surface</doc>
       </member>
       <function name="quark" c:identifier="gdk_vulkan_error_quark">
+        <doc xml:space="preserve">Registers an error quark for [class@Gdk.VulkanContext] errors.</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the error quark</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
@@ -20188,10 +20262,7 @@ so that the origin of @pixbuf is @pixbuf_x, @pixbuf_y.</doc>
       <doc xml:space="preserve">Read content from the given input stream and deserialize it, asynchronously.
 
 The default I/O priority is %G_PRIORITY_DEFAULT (i.e. 0), and lower numbers
-indicate a higher priority.
-
-When the operation is finished, @callback will be called. You must then
-call [func@Gdk.content_deserialize_finish] to get the result of the operation.</doc>
+indicate a higher priority.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -20325,10 +20396,7 @@ is returned.</doc>
       <doc xml:space="preserve">Serialize content and write it to the given output stream, asynchronously.
 
 The default I/O priority is %G_PRIORITY_DEFAULT (i.e. 0), and lower numbers
-indicate a higher priority.
-
-When the operation is finished, @callback will be called. You must then
-call [func@Gdk.content_serialize_finish] to get the result of the operation.</doc>
+indicate a higher priority.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -20378,7 +20446,9 @@ call [func@Gdk.content_serialize_finish] to get the result of the operation.</do
       </parameters>
     </function>
     <function name="dmabuf_error_quark" c:identifier="gdk_dmabuf_error_quark" moved-to="DmabufError.quark">
+      <doc xml:space="preserve">Registers an error quark for [class@Gdk.DmabufTexture] errors.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the error quark</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
@@ -20398,11 +20468,6 @@ is returned.</doc>
           <type name="DragAction" c:type="GdkDragAction"/>
         </parameter>
       </parameters>
-    </function>
-    <function name="drag_surface_size_get_type" c:identifier="gdk_drag_surface_size_get_type">
-      <return-value transfer-ownership="none">
-        <type name="GType" c:type="GType"/>
-      </return-value>
     </function>
     <function name="events_get_angle" c:identifier="gdk_events_get_angle">
       <doc xml:space="preserve">Returns the relative angle from @event1 to @event2.
@@ -20485,7 +20550,9 @@ If not, this function returns %FALSE.</doc>
       </parameters>
     </function>
     <function name="gl_error_quark" c:identifier="gdk_gl_error_quark" moved-to="GLError.quark">
+      <doc xml:space="preserve">Registers an error quark for [class@Gdk.GLContext] errors.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the error quark</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
@@ -20848,13 +20915,10 @@ in order to take effect.</doc>
       </parameters>
     </function>
     <function name="texture_error_quark" c:identifier="gdk_texture_error_quark" moved-to="TextureError.quark">
+      <doc xml:space="preserve">Registers an error quark for [class@Gdk.Texture] errors.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the error quark</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
-      </return-value>
-    </function>
-    <function name="toplevel_size_get_type" c:identifier="gdk_toplevel_size_get_type">
-      <return-value transfer-ownership="none">
-        <type name="GType" c:type="GType"/>
       </return-value>
     </function>
     <function name="unicode_to_keyval" c:identifier="gdk_unicode_to_keyval">
@@ -20872,7 +20936,9 @@ in order to take effect.</doc>
       </parameters>
     </function>
     <function name="vulkan_error_quark" c:identifier="gdk_vulkan_error_quark" moved-to="VulkanError.quark">
+      <doc xml:space="preserve">Registers an error quark for [class@Gdk.VulkanContext] errors.</doc>
       <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the error quark</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>

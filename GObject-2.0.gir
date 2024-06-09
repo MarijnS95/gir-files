@@ -4547,6 +4547,12 @@ See also: G_ADD_PRIVATE()</doc>
         </parameter>
       </parameters>
     </function-macro>
+    <function-macro name="DEPRECATED_ENUMERATOR_IN_2_82_FOR" c:identifier="GOBJECT_DEPRECATED_ENUMERATOR_IN_2_82_FOR" introspectable="0">
+      <parameters>
+        <parameter name="f">
+        </parameter>
+      </parameters>
+    </function-macro>
     <function-macro name="DEPRECATED_FOR" c:identifier="GOBJECT_DEPRECATED_FOR" introspectable="0">
       <parameters>
         <parameter name="f">
@@ -4721,6 +4727,12 @@ See also: G_ADD_PRIVATE()</doc>
         </parameter>
       </parameters>
     </function-macro>
+    <function-macro name="DEPRECATED_IN_2_82_FOR" c:identifier="GOBJECT_DEPRECATED_IN_2_82_FOR" introspectable="0">
+      <parameters>
+        <parameter name="f">
+        </parameter>
+      </parameters>
+    </function-macro>
     <function-macro name="DEPRECATED_MACRO_IN_2_26_FOR" c:identifier="GOBJECT_DEPRECATED_MACRO_IN_2_26_FOR" introspectable="0">
       <parameters>
         <parameter name="f">
@@ -4889,6 +4901,12 @@ See also: G_ADD_PRIVATE()</doc>
         </parameter>
       </parameters>
     </function-macro>
+    <function-macro name="DEPRECATED_MACRO_IN_2_82_FOR" c:identifier="GOBJECT_DEPRECATED_MACRO_IN_2_82_FOR" introspectable="0">
+      <parameters>
+        <parameter name="f">
+        </parameter>
+      </parameters>
+    </function-macro>
     <function-macro name="DEPRECATED_TYPE_IN_2_26_FOR" c:identifier="GOBJECT_DEPRECATED_TYPE_IN_2_26_FOR" introspectable="0">
       <parameters>
         <parameter name="f">
@@ -5052,6 +5070,12 @@ See also: G_ADD_PRIVATE()</doc>
       </parameters>
     </function-macro>
     <function-macro name="DEPRECATED_TYPE_IN_2_80_FOR" c:identifier="GOBJECT_DEPRECATED_TYPE_IN_2_80_FOR" introspectable="0">
+      <parameters>
+        <parameter name="f">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="DEPRECATED_TYPE_IN_2_82_FOR" c:identifier="GOBJECT_DEPRECATED_TYPE_IN_2_82_FOR" introspectable="0">
       <parameters>
         <parameter name="f">
         </parameter>
@@ -6627,28 +6651,30 @@ function pointers.</doc>
         <doc xml:space="preserve">A convenience function to connect multiple signals at once.
 
 The signal specs expected by this function have the form
-"modifier::signal_name", where modifier can be one of the following:
-- signal: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_DEFAULT)
-- object-signal, object_signal: equivalent to g_signal_connect_object (..., G_CONNECT_DEFAULT)
-- swapped-signal, swapped_signal: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_SWAPPED)
-- swapped_object_signal, swapped-object-signal: equivalent to g_signal_connect_object (..., G_CONNECT_SWAPPED)
-- signal_after, signal-after: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_AFTER)
-- object_signal_after, object-signal-after: equivalent to g_signal_connect_object (..., G_CONNECT_AFTER)
-- swapped_signal_after, swapped-signal-after: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_SWAPPED | G_CONNECT_AFTER)
-- swapped_object_signal_after, swapped-object-signal-after: equivalent to g_signal_connect_object (..., G_CONNECT_SWAPPED | G_CONNECT_AFTER)
+`modifier::signal_name`, where `modifier` can be one of the
+following:
 
-|[&lt;!-- language="C" --&gt;
-  menu-&gt;toplevel = g_object_connect (g_object_new (GTK_TYPE_WINDOW,
-						   "type", GTK_WINDOW_POPUP,
-						   "child", menu,
-						   NULL),
-				     "signal::event", gtk_menu_window_event, menu,
-				     "signal::size_request", gtk_menu_window_size_request, menu,
-				     "signal::destroy", gtk_widget_destroyed, &amp;menu-&gt;toplevel,
-				     NULL);
-]|</doc>
+- `signal`: equivalent to `g_signal_connect_data (..., NULL, G_CONNECT_DEFAULT)`
+- `object-signal`, `object_signal`: equivalent to `g_signal_connect_object (..., G_CONNECT_DEFAULT)`
+- `swapped-signal`, `swapped_signal`: equivalent to `g_signal_connect_data (..., NULL, G_CONNECT_SWAPPED)`
+- `swapped_object_signal`, `swapped-object-signal`: equivalent to `g_signal_connect_object (..., G_CONNECT_SWAPPED)`
+- `signal_after`, `signal-after`: equivalent to `g_signal_connect_data (..., NULL, G_CONNECT_AFTER)`
+- `object_signal_after`, `object-signal-after`: equivalent to `g_signal_connect_object (..., G_CONNECT_AFTER)`
+- `swapped_signal_after`, `swapped-signal-after`: equivalent to `g_signal_connect_data (..., NULL, G_CONNECT_SWAPPED | G_CONNECT_AFTER)`
+- `swapped_object_signal_after`, `swapped-object-signal-after`: equivalent to `g_signal_connect_object (..., G_CONNECT_SWAPPED | G_CONNECT_AFTER)`
+
+```c
+menu-&gt;toplevel = g_object_connect (g_object_new (GTK_TYPE_WINDOW,
+                                                 "type", GTK_WINDOW_POPUP,
+                                                 "child", menu,
+                                                 NULL),
+                                   "signal::event", gtk_menu_window_event, menu,
+                                   "signal::size_request", gtk_menu_window_size_request, menu,
+                                   "signal::destroy", gtk_widget_destroyed, &amp;menu-&gt;toplevel,
+                                   NULL);
+```</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">@object</doc>
+          <doc xml:space="preserve">the object</doc>
           <type name="Object" c:type="gpointer"/>
         </return-value>
         <parameters>
@@ -6661,9 +6687,9 @@ The signal specs expected by this function have the form
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
-            <doc xml:space="preserve">#GCallback for the first signal, followed by data for the
-      first signal, followed optionally by more signal
-      spec/callback/data triples, followed by %NULL</doc>
+            <doc xml:space="preserve">[type@GObject.Callback] for the first signal, followed by data for the
+  first signal, followed optionally by more signal
+  spec/callback/data triples, followed by `NULL`</doc>
             <varargs/>
           </parameter>
         </parameters>
@@ -7585,7 +7611,7 @@ return a floating reference.
 
 Using this function on the return value of the user's callback allows
 the user to do whichever is more convenient for them. The caller will
-alway receives exactly one full reference to the value: either the
+always receives exactly one full reference to the value: either the
 one that was returned in the first place, or a floating reference
 that has been converted to a full reference.
 
@@ -7752,7 +7778,7 @@ g_signal_connect (text_view-&gt;buffer, "notify::paste-target-list",
 ]|
 
 It is important to note that you must use
-[canonical parameter names][canonical-parameter-names] as
+[canonical parameter names][class@GObject.ParamSpec#parameter-names] as
 detail strings for the notify signal.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -8630,9 +8656,9 @@ efficient, and is the &#x2018;canonical form&#x2019;. Using `_` is discouraged.<
       <function name="internal" c:identifier="g_param_spec_internal" introspectable="0">
         <doc xml:space="preserve">Creates a new #GParamSpec instance.
 
-See [canonical parameter names][canonical-parameter-names] for details of
-the rules for @name. Names which violate these rules lead to undefined
-behaviour.
+See [canonical parameter names][class@GObject.ParamSpec#parameter-names]
+for details of the rules for @name. Names which violate these rules lead
+to undefined behaviour.
 
 Beyond the name, #GParamSpecs have two more descriptive strings, the
 @nick and @blurb, which may be used as a localized label and description.
@@ -8673,8 +8699,8 @@ surrounding code and supporting libraries.</doc>
 dynamically-generated properties which need to be validated at run-time
 before actually trying to create them.
 
-See [canonical parameter names][canonical-parameter-names] for details of
-the rules for valid names.</doc>
+See [canonical parameter names][class@GObject.ParamSpec#parameter-names]
+for details of the rules for valid names.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @name is a valid property name, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -11297,7 +11323,7 @@ across invocation of g_type_register_static().</doc>
       <field name="class_init" writable="1">
         <doc xml:space="preserve">Location of the class initialization function for
  classed and instantiatable types. Location of the default vtable
- inititalization function for interface types. (optional) This function
+ initialization function for interface types. (optional) This function
  is used both to fill in virtual functions in the class or default vtable,
  and to do type-specific setup such as registering signals and object
  properties.</doc>
@@ -14085,7 +14111,7 @@ contents.</doc>
         </parameters>
       </method>
       <method name="get_nth" c:identifier="g_value_array_get_nth" deprecated="1" deprecated-version="2.32">
-        <doc xml:space="preserve">Return a pointer to the value at @index_ containd in @value_array.</doc>
+        <doc xml:space="preserve">Return a pointer to the value at @index_ contained in @value_array.</doc>
         <doc-deprecated xml:space="preserve">Use g_array_index() instead.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">pointer to a value at @index_ in @value_array</doc>
@@ -16985,12 +17011,16 @@ g_signal_override_class_handler().</doc>
       </parameters>
     </function>
     <function-macro name="signal_connect" c:identifier="g_signal_connect" introspectable="0">
-      <doc xml:space="preserve">Connects a #GCallback function to a signal for a particular object.
+      <doc xml:space="preserve">Connects a [type@GObject.Callback] function to a signal for a particular object.
 
-The handler will be called synchronously, before the default handler of the signal. g_signal_emit() will not return control until all handlers are called.
+The handler will be called synchronously, before the default handler of the signal.
+[func@GObject.signal_emit] will not return control until all handlers are called.
 
-See [memory management of signal handlers][signals.html#Memory_management_of_signal_handlers] for
-details on how to handle the return value and memory management of @data.</doc>
+See [memory management of signal handlers](signals.html#Memory_management_of_signal_handlers) for
+details on how to handle the return value and memory management of @data.
+
+This function cannot fail. If the given signal doesn&#x2019;t exist, a critical
+warning is emitted.</doc>
       <parameters>
         <parameter name="instance">
           <doc xml:space="preserve">the instance to connect to.</doc>
@@ -17009,7 +17039,10 @@ details on how to handle the return value and memory management of @data.</doc>
     <function-macro name="signal_connect_after" c:identifier="g_signal_connect_after" introspectable="0">
       <doc xml:space="preserve">Connects a #GCallback function to a signal for a particular object.
 
-The handler will be called synchronously, after the default handler of the signal.</doc>
+The handler will be called synchronously, after the default handler of the signal.
+
+This function cannot fail. If the given signal doesn&#x2019;t exist, a critical
+warning is emitted.</doc>
       <parameters>
         <parameter name="instance">
           <doc xml:space="preserve">the instance to connect to.</doc>
@@ -17029,9 +17062,12 @@ The handler will be called synchronously, after the default handler of the signa
       <doc xml:space="preserve">Connects a closure to a signal for a particular object.
 
 If @closure is a floating reference (see g_closure_sink()), this function
-takes ownership of @closure.</doc>
+takes ownership of @closure.
+
+This function cannot fail. If the given signal doesn&#x2019;t exist, a critical
+warning is emitted.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the handler ID (always greater than 0 for successful connections)</doc>
+        <doc xml:space="preserve">the handler ID (always greater than 0)</doc>
         <type name="gulong" c:type="gulong"/>
       </return-value>
       <parameters>
@@ -17058,9 +17094,12 @@ takes ownership of @closure.</doc>
       <doc xml:space="preserve">Connects a closure to a signal for a particular object.
 
 If @closure is a floating reference (see g_closure_sink()), this function
-takes ownership of @closure.</doc>
+takes ownership of @closure.
+
+This function cannot fail. If the given signal doesn&#x2019;t exist, a critical
+warning is emitted.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the handler ID (always greater than 0 for successful connections)</doc>
+        <doc xml:space="preserve">the handler ID (always greater than 0)</doc>
         <type name="gulong" c:type="gulong"/>
       </return-value>
       <parameters>
@@ -17092,9 +17131,12 @@ takes ownership of @closure.</doc>
 to g_signal_connect(), but allows to provide a #GClosureNotify for the data
 which will be called when the signal handler is disconnected and no longer
 used. Specify @connect_flags if you need `..._after()` or
-`..._swapped()` variants of this function.</doc>
+`..._swapped()` variants of this function.
+
+This function cannot fail. If the given signal doesn&#x2019;t exist, a critical
+warning is emitted.</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">the handler ID (always greater than 0 for successful connections)</doc>
+        <doc xml:space="preserve">the handler ID (always greater than 0)</doc>
         <type name="gulong" c:type="gulong"/>
       </return-value>
       <parameters>
@@ -17187,7 +17229,10 @@ button_clicked_cb (GtkButton *button, GtkWidget *other_widget)
 
 g_signal_connect (button, "clicked",
                   (GCallback) button_clicked_cb, other_widget);
-]|</doc>
+]|
+
+This function cannot fail. If the given signal doesn&#x2019;t exist, a critical
+warning is emitted.</doc>
       <parameters>
         <parameter name="instance">
           <doc xml:space="preserve">the instance to connect to.</doc>
@@ -17735,9 +17780,8 @@ of building the arguments.</doc>
       <doc xml:space="preserve">Validate a signal name. This can be useful for dynamically-generated signals
 which need to be validated at run-time before actually trying to create them.
 
-See [canonical parameter names][canonical-parameter-names] for details of
-the rules for valid names. The rules for signal names are the same as those
-for property names.</doc>
+See [func@GObject.signal_new] for details of the rules for valid names.
+The rules for signal names are the same as those for property names.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if @name is a valid signal name, %FALSE otherwise.</doc>
         <type name="gboolean" c:type="gboolean"/>

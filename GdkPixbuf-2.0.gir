@@ -316,7 +316,7 @@ interpolation is just as fast and results in higher quality.</doc>
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="PIXBUF_MICRO" value="11" c:type="GDK_PIXBUF_MICRO">
+    <constant name="PIXBUF_MICRO" value="13" c:type="GDK_PIXBUF_MICRO">
       <doc xml:space="preserve">Micro version of gdk-pixbuf library, that is the "2" in
 "0.8.2" for example.</doc>
       <type name="gint" c:type="gint"/>
@@ -344,7 +344,7 @@ interpolation is just as fast and results in higher quality.</doc>
         </parameter>
       </parameters>
     </function-macro>
-    <constant name="PIXBUF_VERSION" value="2.42.11" c:type="GDK_PIXBUF_VERSION">
+    <constant name="PIXBUF_VERSION" value="2.42.13" c:type="GDK_PIXBUF_VERSION">
       <doc xml:space="preserve">Contains the full version of GdkPixbuf as a string.
 
 This is the version being compiled against; contrast with
@@ -1100,7 +1100,7 @@ provided modules.</doc>
           </parameter>
         </parameters>
       </function>
-      <function name="new_from_stream_async" c:identifier="gdk_pixbuf_new_from_stream_async" version="2.24">
+      <function name="new_from_stream_async" c:identifier="gdk_pixbuf_new_from_stream_async" version="2.24" glib:finish-func="new_from_stream_finish">
         <doc xml:space="preserve">Creates a new pixbuf by asynchronously loading an image from an input stream.
 
 For more details see gdk_pixbuf_new_from_stream(), which is the synchronous
@@ -2748,7 +2748,7 @@ The stream is not closed.</doc>
           </parameter>
         </parameters>
       </constructor>
-      <function name="new_from_stream_async" c:identifier="gdk_pixbuf_animation_new_from_stream_async" version="2.28">
+      <function name="new_from_stream_async" c:identifier="gdk_pixbuf_animation_new_from_stream_async" version="2.28" glib:finish-func="new_from_stream_finish">
         <doc xml:space="preserve">Creates a new animation by asynchronously loading an image from an input stream.
 
 For more details see gdk_pixbuf_new_from_stream(), which is the synchronous
